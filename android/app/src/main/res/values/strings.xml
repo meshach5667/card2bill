@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">card2bill</string>
+    <string name="title_activity_main">card2bill</string>
+    <string name="package_name">com.card2bill.app</string>
+    <string name="custom_url_scheme">com.card2bill.app</string>
+</resources>
