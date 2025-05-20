@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from "react";
 import {
   Box,
   Container,
@@ -14,8 +14,8 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
-  MenuItem
-} from '@mui/material';
+  MenuItem,
+} from "@mui/material";
 import {
   CameraAlt,
   Visibility,
@@ -28,21 +28,18 @@ import {
   Notifications,
   Language,
   Help,
-  Menu as MenuIcon
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import Navigation from '../components/Navigation';
-import ChangePasswordModal from '../components/ChangePasswordModal';
-import TwoFactorAuthModal from '../components/TwoFactorAuthModal';
-import axios from 'axios';
-
-
-
+  Menu as MenuIcon,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import Navigation from "../components/Navigation";
+import ChangePasswordModal from "../components/ChangePasswordModal";
+import TwoFactorAuthModal from "../components/TwoFactorAuthModal";
+import axios from "axios";
 
 // Type Definitions
 interface SettingsPageProps {
   toggleTheme: () => void;
-  themeMode: 'light' | 'dark';
+  themeMode: "light" | "dark";
 }
 
 interface ProfileState {
@@ -67,12 +64,12 @@ interface NotificationsState {
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: 120,
   height: 120,
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'scale(1.05)',
-    boxShadow: theme.shadows[4]
-  }
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    transform: "scale(1.05)",
+    boxShadow: theme.shadows[4],
+  },
 }));
 
 const SectionCard = styled(Paper)(({ theme }) => ({
@@ -80,38 +77,39 @@ const SectionCard = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   borderRadius: theme.spacing(2),
   boxShadow: theme.shadows[1],
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    boxShadow: theme.shadows[3]
-  }
+  transition: "all 0.3s ease",
+  "&:hover": {
+    boxShadow: theme.shadows[3],
+  },
 }));
- 
+
 const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const [open2FAModal, setOpen2FAModal] = useState(false);
 
-
   const [profile, setProfile] = useState<ProfileState>({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+234 812 345 6789'
+    name: "John Doe",
+    email: "john.doe@example.com",
+    phone: "+234 812 345 6789",
   });
   const [bankDetails, setBankDetails] = useState<BankDetailsState>({
-    bankName: 'First Bank',
-    accountNumber: '1234567890',
-    accountName: 'John Doe'
+    bankName: "First Bank",
+    accountNumber: "1234567890",
+    accountName: "John Doe",
   });
   const [showAccountNumber, setShowAccountNumber] = useState(false);
   const [notifications, setNotifications] = useState<NotificationsState>({
     email: true,
     sms: false,
-    push: true
+    push: true,
   });
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -119,28 +117,27 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
 
   const handleProfileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
+    setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleBankChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setBankDetails(prev => ({ ...prev, [name]: value }));
+    setBankDetails((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleNotificationChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setNotifications(prev => ({ ...prev, [name]: checked }));
+    setNotifications((prev) => ({ ...prev, [name]: checked }));
   };
   const handlePasswordSave = (current: string, newPass: string) => {
     // Call API or add validation here
-    console.log('Changing password from', current, 'to', newPass);
+    console.log("Changing password from", current, "to", newPass);
   };
   const handle2FAVerification = (code: string) => {
     // API logic to verify 2FA code
-    console.log('Verifying 2FA code:', code);
+    console.log("Verifying 2FA code:", code);
   };
-  
-  
+
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -155,25 +152,37 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
 
   const saveProfile = () => {
     // API call to save profile
-    console.log('Profile saved:', profile);
+    console.log("Profile saved:", profile);
   };
 
-  const saveBankDetails = () => {
-    // API call to save bank details
-    console.log('Bank details saved:', bankDetails);
+  const saveBankDetails = async () => {
+    try {
+      setLoading(true);
+      // API call to save bank details would go here
+      // For example: await updateBankDetails(bankDetails);
+      console.log("Bank details saved:", bankDetails);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error saving bank details:", err);
+      setError("Failed to save bank details. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Navigation mobileOpen={mobileOpen} handleDrawerToggle={handleDrawerToggle} />
-      
+    <Box sx={{ display: "flex" }}>
+      <Navigation
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
+      />
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
           width: { md: `calc(100% - 240px)` },
-          ml: { md: '240px' }
+          ml: { md: "240px" },
         }}
       >
         {isMobile && (
@@ -182,38 +191,55 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
+            sx={{ mr: 2, display: { md: "none" } }}
           >
             <MenuIcon />
           </IconButton>
         )}
 
         <Container maxWidth="md">
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ fontWeight: "bold", mb: 4 }}
+          >
             Account Settings
           </Typography>
 
           {/* Profile Section */}
           <SectionCard>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <AccountCircle color="primary" sx={{ mr: 1, fontSize: 30 }} />
               <Typography variant="h6">Profile Information</Typography>
             </Box>
-            
-            <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', mb: 3 }}>
-              <Box sx={{ position: 'relative', mr: isMobile ? 0 : 3, mb: isMobile ? 2 : 0 }}>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                alignItems: "center",
+                mb: 3,
+              }}
+            >
+              <Box
+                sx={{
+                  position: "relative",
+                  mr: isMobile ? 0 : 3,
+                  mb: isMobile ? 2 : 0,
+                }}
+              >
                 <StyledAvatar
-                  src={previewImage || '/default-avatar.png'}
+                  src={previewImage || "/default-avatar.png"}
                   alt="Profile"
                 />
                 <IconButton
                   color="primary"
                   component="label"
                   sx={{
-                    position: 'absolute',
+                    position: "absolute",
                     bottom: 0,
                     right: 0,
-                    bgcolor: 'background.paper'
+                    bgcolor: "background.paper",
                   }}
                 >
                   <CameraAlt />
@@ -225,8 +251,8 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
                   />
                 </IconButton>
               </Box>
-              
-              <Box sx={{ flexGrow: 1, width: '100%' }}>
+
+              <Box sx={{ flexGrow: 1, width: "100%" }}>
                 <TextField
                   fullWidth
                   label="Full Name"
@@ -252,8 +278,8 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
                 />
               </Box>
             </Box>
-            
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Button variant="contained" onClick={saveProfile}>
                 Save Profile
               </Button>
@@ -262,11 +288,11 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
 
           {/* Bank Details Section */}
           <SectionCard>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <AccountBalance color="primary" sx={{ mr: 1, fontSize: 30 }} />
               <Typography variant="h6">Bank Account Details</Typography>
             </Box>
-            
+
             <TextField
               fullWidth
               label="Bank Name"
@@ -275,12 +301,12 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
               onChange={handleBankChange}
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               fullWidth
               label="Account Number"
               name="accountNumber"
-              type={showAccountNumber ? 'text' : 'password'}
+              type={showAccountNumber ? "text" : "password"}
               value={bankDetails.accountNumber}
               onChange={handleBankChange}
               InputProps={{
@@ -293,11 +319,11 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
                       {showAccountNumber ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
               }}
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               fullWidth
               label="Account Name"
@@ -305,8 +331,8 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
               value={bankDetails.accountName}
               onChange={handleBankChange}
             />
-            
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
               <Button variant="contained" onClick={saveBankDetails}>
                 Save Bank Details
               </Button>
@@ -315,18 +341,29 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
 
           {/* Preferences Section */}
           <SectionCard>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <Brightness4 color="primary" sx={{ mr: 1, fontSize: 30 }} />
               <Typography variant="h6">Preferences</Typography>
             </Box>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {themeMode === 'dark' ? <Brightness7 sx={{ mr: 1 }} /> : <Brightness4 sx={{ mr: 1 }} />}
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {themeMode === "dark" ? (
+                  <Brightness7 sx={{ mr: 1 }} />
+                ) : (
+                  <Brightness4 sx={{ mr: 1 }} />
+                )}
                 <Typography>Dark Mode</Typography>
               </Box>
               <Switch
-                checked={themeMode === 'dark'}
+                checked={themeMode === "dark"}
                 onChange={toggleTheme}
                 color="primary"
               />
@@ -335,11 +372,11 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
 
           {/* Notifications Section */}
           <SectionCard>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <Notifications color="primary" sx={{ mr: 1, fontSize: 30 }} />
               <Typography variant="h6">Notifications</Typography>
             </Box>
-            
+
             <FormControlLabel
               control={
                 <Switch
@@ -352,7 +389,7 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
               label="Email Notifications"
               sx={{ mb: 1 }}
             />
-            
+
             <FormControlLabel
               control={
                 <Switch
@@ -365,7 +402,7 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
               label="SMS Notifications"
               sx={{ mb: 1 }}
             />
-            
+
             <FormControlLabel
               control={
                 <Switch
@@ -379,43 +416,47 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
             />
           </SectionCard>
 
-        {/* Security Section */}
-{/* Security Section */}
-<SectionCard>
-  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-    <Security color="primary" sx={{ mr: 1, fontSize: 30 }} />
-    <Typography variant="h6">Security</Typography>
-  </Box>
-  
-  <Button variant="outlined" sx={{ mr: 2 }} onClick={() => setOpenChangePassword(true)}>
-    Change Password
-  </Button>
+          {/* Security Section */}
+          {/* Security Section */}
+          <SectionCard>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Security color="primary" sx={{ mr: 1, fontSize: 30 }} />
+              <Typography variant="h6">Security</Typography>
+            </Box>
 
-  <Button variant="outlined" onClick={() => setOpen2FAModal(true)}>
-    Two-Factor Authentication
-  </Button>
+            <Button
+              variant="outlined"
+              sx={{ mr: 2 }}
+              onClick={() => setOpenChangePassword(true)}
+            >
+              Change Password
+            </Button>
 
-  {/* Modals */}
-  <ChangePasswordModal
-    open={openChangePassword}
-    onClose={() => setOpenChangePassword(false)}
-    onSave={handlePasswordSave}
-  />
+            <Button variant="outlined" onClick={() => setOpen2FAModal(true)}>
+              Two-Factor Authentication
+            </Button>
 
-  <TwoFactorAuthModal
-    open={open2FAModal}
-    onClose={() => setOpen2FAModal(false)}
-    onVerify={handle2FAVerification}
-  />
-</SectionCard>
+            {/* Modals */}
+            <ChangePasswordModal
+              open={openChangePassword}
+              onClose={() => setOpenChangePassword(false)}
+              onSave={handlePasswordSave}
+            />
+
+            <TwoFactorAuthModal
+              open={open2FAModal}
+              onClose={() => setOpen2FAModal(false)}
+              onVerify={handle2FAVerification}
+            />
+          </SectionCard>
 
           {/* Language Section */}
           <SectionCard>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <Language color="primary" sx={{ mr: 1, fontSize: 30 }} />
               <Typography variant="h6">Language & Region</Typography>
             </Box>
-            
+
             <TextField
               select
               label="Language"
@@ -431,19 +472,19 @@ const SettingsPage = ({ toggleTheme, themeMode }: SettingsPageProps) => {
 
           {/* Support Section */}
           <SectionCard>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <Help color="primary" sx={{ mr: 1, fontSize: 30 }} />
               <Typography variant="h6">Support</Typography>
             </Box>
-            
+
             <Button variant="outlined" sx={{ mr: 2 }}>
               Help Center
             </Button>
-            
+
             <Button variant="outlined" sx={{ mr: 2 }}>
               Contact Support
             </Button>
-            
+
             <Button variant="outlined" color="error">
               Delete Account
             </Button>
