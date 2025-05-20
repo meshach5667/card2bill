@@ -417,82 +417,90 @@ const GiftCardsPage = () => {
   };
 
   const completeTransaction = async () => {
-    try {
-      if (activeTab === 0) {
-        // Sell transaction
-        const data = {
-          gift_card_id: sellTransaction.cardType,
-          transaction_type: "sell",
-          amount: sellTransaction.amount,
-          price: sellTransaction.totalNaira,
-          card_code: sellTransaction.cardNumber || "",
-          card_pin: sellTransaction.cardPin || "",
-          card_image_url: previewImage || "",
-          notes: sellTransaction.comments || "",
-        };
+  try {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "Bearer";
 
-        await createGiftCardTransaction(data);
-      } else {
-
-        
-        
-        // Buy transaction
-        const data = {
-          gift_card_id: buyTransaction.cardType,
-          transaction_type: "buy",
-          amount: buyTransaction.amount,
-          price: buyTransaction.totalNaira,
-          card_code: "",
-          card_pin: "",
-          card_image_url: "",
-          notes: "",
-        };
-
-        await createGiftCardTransaction(data);
-      }
-
-      setCompleted(true);
-    } catch (err) {
-      console.error("Error completing transaction:", err);
-      setError("Failed to complete transaction. Please try again.");
+    if (!token) {
+      setError("Authorization token is missing. Please log in again.");
+      return;
     }
-  };
 
-  const resetTransaction = () => {
-    setActiveStep(0);
+    const headers = {
+      Authorization: `${tokenType} ${token}`,
+    };
+
     if (activeTab === 0) {
-      setSellTransaction({
-        cardType: "",
-        country: "",
-        category: "",
-        cardTypeOption: "",
-        receiptType: "",
-        amount: 0,
-        totalNaira: 0,
-        cardNumber: "",
-        cardPin: "",
-      });
+      // Sell transaction
+      const data = {
+        gift_card_id: sellTransaction.cardType,
+        transaction_type: "sell",
+        amount: sellTransaction.amount,
+        price: sellTransaction.totalNaira,
+        card_code: sellTransaction.cardNumber || "",
+        card_pin: sellTransaction.cardPin || "",
+        card_image_url: previewImage || "",
+        notes: sellTransaction.comments || "",
+      };
+
+      await createGiftCardTransaction(data, headers);
     } else {
-      setBuyTransaction({
-        cardType: "",
-        country: "",
-        category: "",
-        cardTypeOption: "",
-        amount: 0,
-        totalNaira: 0,
-        email: "",
-      });
+      // Buy transaction
+      const data = {
+        gift_card_id: buyTransaction.cardType,
+        transaction_type: "buy",
+        amount: buyTransaction.amount,
+        price: buyTransaction.totalNaira,
+        card_code: "",
+        card_pin: "",
+        card_image_url: "",
+        notes: "",
+      };
+
+      await createGiftCardTransaction(data, headers);
     }
-    setPreviewImage(null);
-    setCompleted(false);
-  };
 
-  const selectedCard = giftCards.find(
-    (card) =>
-      card.id ===
-      (activeTab === 0 ? sellTransaction.cardType : buyTransaction.cardType),
-  );
+    setCompleted(true);
+  } catch (err) {
+    console.error("Error completing transaction:", err);
+    setError("Failed to complete transaction. Please try again.");
+  }
+};
 
+const resetTransaction = () => {
+  setActiveStep(0);
+  if (activeTab === 0) {
+    setSellTransaction({
+      cardType: "",
+      country: "",
+      category: "",
+      cardTypeOption: "",
+      receiptType: "",
+      amount: 0,
+      totalNaira: 0,
+      cardNumber: "",
+      cardPin: "",
+    });
+  } else {
+    setBuyTransaction({
+      cardType: "",
+      country: "",
+      category: "",
+      cardTypeOption: "",
+      amount: 0,
+      totalNaira: 0,
+      email: "",
+    });
+  }
+  setPreviewImage(null);
+  setCompleted(false);
+};
+
+const selectedCard = giftCards.find(
+  (card) =>
+    card.id ===
+    (activeTab === 0 ? sellTransaction.cardType : buyTransaction.cardType)
+);
   return (
     <Box sx={{ display: "flex" }}>
       <Navigation

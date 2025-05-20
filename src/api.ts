@@ -129,7 +129,7 @@ export const createGiftCardTransaction = async (data: {
   card_pin: string;
   card_image_url: string;
   notes: string;
-}) => {
+}, headers: { Authorization: string; }) => {
   try {
     const response = await api.post(`/api/v1/gift-cards/transactions/`, data);
     return response.data;
